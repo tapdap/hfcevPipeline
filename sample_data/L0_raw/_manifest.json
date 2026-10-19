@@ -1,0 +1,74 @@
+[
+ {
+  "db": "sample",
+  "table": "z_qlkj9999999990001",
+  "path": "can/z_qlkj9999999990001.parquet",
+  "rows": 8,
+  "bytes": 5196,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_qlkj9999999990002_part1",
+  "path": "can/z_qlkj9999999990002_part1.parquet",
+  "rows": 3,
+  "bytes": 5050,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_qlkj9999999990002_part2",
+  "path": "can/z_qlkj9999999990002_part2.parquet",
+  "rows": 2,
+  "bytes": 5035,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "run_parameters",
+  "path": "can_legacy/run_parameters.parquet",
+  "rows": 6,
+  "bytes": 4832,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_gps_QLKJ9999999990001",
+  "path": "gps/z_gps_QLKJ9999999990001.parquet",
+  "rows": 7,
+  "bytes": 3210,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_gps_QLKJ9999999990002",
+  "path": "gps/z_gps_QLKJ9999999990002.parquet",
+  "rows": 3,
+  "bytes": 3138,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_qlkj9999999990003",
+  "path": "can/z_qlkj9999999990003.parquet",
+  "rows": 5,
+  "bytes": 5473,
+  "status": "ok",
+  "error": null
+ },
+ {
+  "db": "sample",
+  "table": "z_gps_QLKJ9999999990003",
+  "path": "gps/z_gps_QLKJ9999999990003.parquet",
+  "rows": 2,
+  "bytes": 3105,
+  "status": "ok",
+  "error": null
+ }
+]

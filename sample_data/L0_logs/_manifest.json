@@ -1,0 +1,22 @@
+[
+ {
+  "relative_path": "receive-logs/log/2024-05-07/info/info.2024-05-07-08.0.log",
+  "bytes": 2955,
+  "sha256": "8b408a5d6d6221a3b6a91bb6cbfa37a34e1a458084e701ea482a4a664dafe206"
+ },
+ {
+  "relative_path": "receive-logs/log/2024-05-07/info/info.2024-05-07-08.1.log",
+  "bytes": 1243,
+  "sha256": "5dc96dd400f21a527b139ccf903d10a895bfa7278fdc8c9671bef3b5eef9b8ad"
+ },
+ {
+  "relative_path": "receive-logs/log/2024-05-07/warn/warn.2024-05-07-09.0.log",
+  "bytes": 231,
+  "sha256": "bc740322f7a791ab800079874b529b1616de40e6bd9e2e8bc42ae7559809fd97"
+ },
+ {
+  "relative_path": "receive-logs/log/2024-05-08/info/info.2024-05-08-10.0.log",
+  "bytes": 8083,
+  "sha256": "98ddcefa373c5c7c499ede0950fd7838aa297544620faee144e35d7a0c6c9ceb"
+ }
+]

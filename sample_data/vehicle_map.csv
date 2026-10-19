@@ -1,0 +1,4 @@
+vehicle_id,tbox,unit,valid_from,valid_to,source,status,candidate_vehicle_key,note
+V001,QLKJ9999999990001,1,,2024-05-08T00:00:00,replacement_record,confirmed,,first TBOX
+V001,QLKJ9999999990003,2,2024-05-08T00:00:00,2024-05-08T10:00:20,replacement_record,confirmed,,removed at 10:00:20
+V002,QLKJ9999999990002,1,,,ledger,confirmed,,

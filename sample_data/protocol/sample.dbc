@@ -1,0 +1,18 @@
+VERSION ""
+
+BO_ 2565865729 FC_STATUS: 8 Vector__XXX
+ SG_ FcVol : 0|16@1+ (0.1,0) [0|6553.5] "V" Vector__XXX
+ SG_ FcCur : 16|16@1+ (0.1,-100) [-100|6453.5] "A" Vector__XXX
+ SG_ SOC : 32|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+
+BO_ 2565865986 VCU_STATUS: 8 Vector__XXX
+ SG_ veh_spd : 0|16@1+ (0.01,0) [0|655.35] "km/h" Vector__XXX
+ SG_ TotKM : 16|32@1+ (0.1,0) [0|429496729.5] "km" Vector__XXX
+ SG_ CabinTemp : 48|8@1- (1,0) [-128|127] "degC" Vector__XXX
+
+BO_ 2565866243 CELL_STATUS: 8 Vector__XXX
+ SG_ MaxCellV : 0|16@1+ (0.001,0) [0|65.535] "V" Vector__XXX
+ SG_ MinCellV : 16|16@1+ (0.001,0) [0|65.535] "V" Vector__XXX
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ Unused : 0|8@1+ (1,0) [0|255] "" Vector__XXX

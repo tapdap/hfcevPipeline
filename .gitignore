@@ -1,0 +1,23 @@
+# Machine-specific configuration (paths, worker counts, private cohort location)
+configs/local*.toml
+!configs/local.example.toml
+!configs/local.sample.toml
+
+# Data and generated artefacts never live in the repository
+/work/
+/outputs/
+/downloaded-data/
+*.parquet
+!sample_data/L0_raw/**/*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Editors / OS
+.DS_Store
+.ipynb_checkpoints/
+.vscode/
+.idea/

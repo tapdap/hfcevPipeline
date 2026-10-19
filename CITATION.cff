@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, together with the data descriptor and the dataset."
+title: "HFCEV fleet telemetry: processing, validation and figure code"
+version: 1.0.0
+date-released: 2026-10-19
+license: Apache-2.0
+type: software
+repository-code: "https://github.com/tapdap/hfcevPipeline"
+authors:
+  - family-names: Sun
+    given-names: Yibao
+    affiliation: "Shanghai Jiao Tong University"
+  - family-names: Hang
+    given-names: Zongyuan
+    affiliation: "Shanghai Jiao Tong University"
+  - family-names: Sun
+    given-names: Peiyan
+    affiliation: "Shanghai Jiao Tong University"
+  - family-names: Xu
+    given-names: Shengyuan
+    affiliation: "Shanghai Jiao Tong University"
+  - family-names: Sun
+    given-names: Yiyan
+    affiliation: "Hywave New Energy Co., Ltd."
+  - family-names: Xu
+    given-names: Yanyan
+    affiliation: "Shanghai Jiao Tong University"
+  - family-names: Yang
+    given-names: Xiaokang
+    affiliation: "Shanghai Jiao Tong University"
+keywords:
+  - hydrogen
+  - fuel cell
+  - heavy-duty truck
+  - fleet telemetry
+  - data quality

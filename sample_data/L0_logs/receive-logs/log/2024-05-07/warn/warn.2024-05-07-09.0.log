@@ -1,0 +1,6 @@
+2024-05-07 09:00:00.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_batch",
+	"sn":	"QLKJ9999999990002",
+	"time":	"2024-05-07 09:00:00",
+	"fault":	[]
+}

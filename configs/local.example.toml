@@ -1,0 +1,17 @@
+# Copy to configs/local.toml (git-ignored) and adjust.
+# Relative paths are resolved against the directory of this file.
+
+# Working directory holding all data layers (L0_raw, L1_harmonized, ...).
+work = "../../work"
+
+# CSV with a `device_id` column listing the processed devices; relative to `work`.
+cohort = "restricted/cohort_v1.csv"
+
+# Parallel worker processes (one device per process, single-threaded each).
+workers = 4
+
+# Private inputs that are not part of the release, relative to `work`.
+[files]
+dbc = "protocol/can_protocol.dbc"
+# Private TBOX -> vehicle map (columns in core/vehicles.py); relative to `work`.
+vehicle_map = "restricted/vehicle_map.csv"

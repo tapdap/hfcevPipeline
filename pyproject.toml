@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hfcev-fleet-dataset"
+version = "1.0.0"
+description = "Processing, validation and figure code for the HFCEV fleet telemetry dataset"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4",
+    "pandas>=3.0",
+    "pyarrow>=25.0",
+]
+
+[project.optional-dependencies]
+figures = ["matplotlib>=3.8"]
+
+[project.urls]
+Repository = "https://github.com/tapdap/hfcevPipeline"
+Issues = "https://github.com/tapdap/hfcevPipeline/issues"
+
+[project.scripts]
+hfcev = "hfcev.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

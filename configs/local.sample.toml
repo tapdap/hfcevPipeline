@@ -1,0 +1,9 @@
+# Settings for the synthetic sample run (`make sample`); paths relative to this file.
+work = "../outputs/sample"
+cohort = "cohort.csv"
+workers = 2
+
+[files]
+dbc = "protocol/sample.dbc"
+# Private TBOX -> vehicle map (columns in core/vehicles.py); relative to `work`.
+vehicle_map = "vehicle_map.csv"

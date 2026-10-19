@@ -1,0 +1,139 @@
+# Processing parameters for dataset release v1.
+# Every value that changes the released data lives here; machine paths live in local.toml.
+
+[dataset]
+name = "hfcev-fleet"
+version = "1.0"
+# Raw timestamps are naive local device time; no timezone shift is applied.
+window_start = "2024-04-01T00:00:00"  # inclusive
+window_end = "2026-06-01T00:00:00"    # exclusive
+
+[s1_harmonize]
+# Device identifiers are the trimmed, upper-cased `sn` field.
+device_pattern = "^QLKJ[0-9]{13}$"
+# Columns describing extraction provenance; ignored when comparing record content.
+provenance_fields = ["id", "sn", "time", "_src_table", "_src_db", "_dump_ts"]
+# Legacy operation table that overlaps the per-device CAN tables.
+legacy_run_file = "can_legacy/run_parameters.parquet"
+# Operation-stream fields removed by approved decision (unreliable or redundant).
+drop_fields = ["ActPower", "Con", "CoolOutTarTemp"]
+# Dates on which LAT/LON were audited as stored at 1/100 scale and are restored by x100.
+gps_scale_restore_dates = ["2024-05-07"]
+
+[s2_logs]
+# SHA-256 of the CAN protocol (DBC) used to decode receive logs; the file itself is private.
+dbc_sha256 = "9a2c0dd0ad83ae1e3dbd8d5b77361e1d7b326a69a09cc770205c2f2241bf3e22"
+# Rolling log files are ~10 MB; anything above this bound indicates an unexpected input.
+max_file_bytes = 67108864
+
+[s3_timeline]
+# A reported (device) clock may lead the receiving server's log clock by at most this much.
+max_reported_lead_s = 60
+# ... and may lag it by at most this much; older reported times come from reset device clocks.
+max_reported_lag_s = 86400
+# Threshold grid evaluated for the sensitivity report (does not change the outputs above).
+sensitivity_lead_s = [0, 10, 60, 600]
+sensitivity_lag_s = [3600, 86400, 2592000]
+# Publish every addition (its `time` is the receipt clock); when false, additions whose device clock
+# fails the checks keep a null `time_device` and the failure in `time_device_status`.
+# true would publish only additions with a verified device clock.
+additions_require_verified_device_time = false
+# GPS: coordinates are compared after rounding to this many decimals (both sources carry <= 5).
+gps_coordinate_decimals = 6
+# GPS plausibility test (diagnostic only): implied speed to neighbours within the gap.
+gps_max_speed_kmh = 150
+gps_speed_max_gap_s = 300
+
+[s4_quality]
+# A new reporting segment starts after a receipt-clock gap longer than this (s).
+segment_max_gap_s = 60
+# Segments shorter than this are flagged, never dropped (s).
+short_segment_s = 300
+# Alternative gap thresholds reported as segment counts only.
+gap_sensitivity_s = [300, 3600]
+# Pairs [low, high] that must satisfy low <= high when both are present.
+relations = [["MinCellV", "MaxCellV"]]
+# Counters expected not to decrease inside a segment (flagged, not corrected).
+counters = ["TotKM", "TotH2Kg"]
+# GPS region box [lat_min, lat_max, lon_min, lon_max] in degrees (fixes outside are flagged).
+gps_region_bbox = [18.0, 54.0, 73.0, 135.0]
+# Verified, reversible corrections of historical decoding defects (see core/corrections.py).
+decoding_corrections = ["hybottlep_highppmnum_nibble_swap"]
+# Statistics only: constant runs at least this long (s), split into zero and non-zero values.
+stuck_min_duration_s = [600, 3600]
+# Statistics only: a step counts as a jump above this share of the device's value range (p99.5 - p0.5).
+jump_range_share = 0.5
+
+[s5_derived]
+# main_state code of the fuel-cell fault state (provider code table); trips count records in this state.
+fault_state_code = 18
+# GPS: a frozen position counts as "no fix" when the vehicle moved at least this fast meanwhile (km/h).
+gps_no_fix_min_speed_kmh = 5
+# GPS track steps only between usable fixes at most this far apart (s); longer gaps break the track.
+gps_track_max_gap_s = 60
+# Odometer increments above max_speed * dt + 1 km (resolution) are jumps, not distance.
+odometer_max_speed_kmh = 150
+# CAN-GPS alignment: main tolerance and the comparison grid (s).
+alignment_tolerance_s = 10
+alignment_grid_s = [0, 5, 10, 20, 30]
+# Fuel cell counts as running above this stack current (A).
+fc_on_current_a = 1.0
+# Segments are joined into one trip across gaps up to this long (s) or with a qualified odometer rise.
+trip_merge_gap_s = 300
+# A longer gap (<= odometer_gap_attribution_max_s) joins a trip only if the odometer rose at least this average speed across it.
+trip_merge_min_speed_kmh = 5
+# A trip is moving when its odometer distance reaches this (km).
+trip_moving_min_km = 1
+# A rise of corrected HyBottleP by at least this much between consecutive readings is a refuelling.
+refuel_min_rise = 5.0
+# Start/end cells of trips: coordinates rounded to this many decimals (degrees).
+grid_decimals = 1
+# Odometer increases across gaps longer than this (s) are reported but not attributed to a day or trip.
+odometer_gap_attribution_max_s = 3600
+# GPS counts as stuck in a trip when it covers less than this share of an odometer distance of at least gps_static_min_km.
+gps_static_share = 0.2
+gps_static_min_km = 5
+# GPS evidence for in_segment_delayed increments: look this far (s) before the previous odometer reading.
+delayed_check_window_s = 1200
+# Hydrogen counter TotH2Kg: integer kg on the bus, wrapping after 655 (0.01 kg x 65536 counts).
+h2_counter_period_kg = 655.36
+# Across steps where the odometer advanced at least this far (km), the number of counter wraps is
+# taken from the device's consumption rate x distance (wraps hidden in data gaps).
+h2_wrap_inference_min_km = 1000
+
+[s6_vehicles]
+# TBOX installations (private map, local.toml [files] vehicle_map) are joined into vehicles.
+# Handover check: the odometer may advance at most this much per day between two TBOXes of one vehicle.
+handover_max_km_per_day = 400
+
+[s7_release]
+# Fields missing in at least this share of all records (fleet-wide) are not published.
+drop_missing_share = 0.99
+# Dictionary notes: fields missing at least this share are marked sparse ...
+sparse_missing_share = 0.9
+# ... and fields whose present values are 0 at least this share are marked near-constant.
+constant_zero_share = 0.99
+# Published with their corrected values (stage 4) under the original names.
+corrected_fields = ["HyBottleP", "HighPPMNum"]
+# Fields processed but not published (undocumented vendor codes; decided 2026-10-19). Derived columns computed
+# from such fields would be listed in withheld_columns = { table = [columns] }.
+withheld_fields = ["sub_state", "FaultLevel", "FaultCode"]
+# One signal stored under two names: the platform renamed HYCSN to hydncsu on 2025-06-09 (the two never
+# co-occur). The target is filled from the source where it is null; the source is not published.
+merged_fields = { hydncsu = ["HYCSN"] }
+# GPS coordinates in the release: "withheld", "full", or a number of decimals such as "3".
+# Decided 2026-10-19: 2 decimals (about 1 km); fix status, speeds and distances are always published.
+gps_coordinates = "2"
+
+[stats]
+# Figure-ready statistics (validation/stats.py). Histograms on fixed bins: field = [low, high, step].
+fc_on_current_a = 1.0
+well_covered_min_km = 5
+well_covered_share = 0.9
+# Stack voltage at a fixed operating point (vehicle identity check): records with stack current and coolant
+# outlet temperature in these ranges; monthly quartiles per vehicle and installation. 80-90 A is the most
+# frequent low-load operating point of the fleet.
+stack_voltage = { current_a = [80, 90], coolant_out_c = [60, 75] }
+hist1d = { FcVol = [0, 520, 2], FcCur = [0, 520, 2], TarDCCur = [0, 520, 2], MaxCellV = [0, 1200, 5], MinCellV = [0, 1200, 5], SOC = [0, 101, 1], CoolInActTemp = [-40, 121, 1], CoolOutActTemp = [-40, 121, 1], RadOutTemp = [-40, 91, 1], EnvTemp = [-40, 61, 1], air_temp = [-40, 121, 1], HyBottleP = [0, 40, 0.25], HyMidP = [0, 3, 0.025], VCUTarPower = [0, 145, 1], ISO = [0, 30000, 250], air_surge_p = [0, 400, 2], rad_duty = [0, 101, 1] }
+# 2-D histograms while the fuel cell is on: name = [x, [low, high, step], y, [low, high, step]].
+hist2d = { vi = ["FcCur", [0, 520, 5], "FcVol", [0, 520, 5]], cells = ["MinCellV", [0, 1200, 10], "MaxCellV", [0, 1200, 10]], power = ["VCUTarPower", [0, 145, 1], "fc_power_kw", [0, 240, 2]] }

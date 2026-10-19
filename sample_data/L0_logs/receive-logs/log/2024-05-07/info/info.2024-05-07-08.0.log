@@ -1,0 +1,124 @@
+2024-05-07 08:00:00.001 [main] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - Starting receiver
+2024-05-07 08:00:05.100 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 接收消息主题:/fleet/tbox/QLKJ9999999990001/CAN
+2024-05-07 08:00:05.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_batch",
+	"sn":	"QLKJ9999999990001",
+	"time":	"2024-05-07 08:00:05",
+	"data":	[
+		0,
+		418382081,
+		112,
+		23,
+		220,
+		5,
+		200,
+		0,
+		0,
+		0,
+		0,
+		418382338,
+		160,
+		15,
+		16,
+		39,
+		0,
+		0,
+		246,
+		0,
+		0,
+		291,
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8
+	],
+	"fault":	[
+		"2024-05-07 08:00:04",
+		0,
+		418382338,
+		160,
+		15,
+		16,
+		39,
+		0,
+		0,
+		246,
+		0
+	],
+	"checksum":	[
+		1,
+		0
+	]
+}
+2024-05-07 08:00:05.200 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 接收消息主题:/fleet/tbox/QLKJ9999999990001/GPS
+2024-05-07 08:00:05.201 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_gps",
+	"sn":	"QLKJ9999999990001",
+	"time":	"2024-05-07 08:00:05",
+	"data":	[
+		3630.1234,
+		"N",
+		11112.5678,
+		"E"
+	],
+	"result":	1
+}
+2024-05-07 08:00:10.100 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 接收消息主题:/fleet/tbox/QLKJ9999999990001/CAN
+2024-05-07 08:00:10.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_batch",
+	"sn":	"QLKJ9999999990001",
+	"time":	"2024-05-07 08:00:10",
+	"data":	[
+		0,
+		418382081,
+		112,
+		23,
+		220,
+		5,
+		200,
+		0,
+		0,
+		0,
+		0,
+		418382081,
+		122,
+		23,
+		220,
+		5,
+		200,
+		0,
+		0,
+		0
+	],
+	"fault":	[]
+}
+2024-05-07 08:00:11.100 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 接收消息主题:/fleet/tbox/QLKJ9999999990002/CAN
+2024-05-07 08:00:11.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"heart",
+	"sn":	"QLKJ9999999990001",
+	"time":	"2024-05-07 08:00:11"
+}
+2024-05-07 08:00:12.100 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 接收消息主题:/fleet/tbox/QLKJ9999999990002/HEART
+2024-05-07 08:00:12.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"heart",
+	"sn":	"QLKJ9999999990002",
+	"time":	"2024-05-07 08:00:12"
+}
+2024-05-07 08:00:13.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_gps",
+	"sn":	"bad sn!",
+	"time":	"2024-05-07 08:00:13",
+	"data":	[
+		3630.0,
+		"N",
+		11112.0,
+		"E"
+	]
+}
+2024-05-07 08:00:14.101 [MQTT Call: sample] INFO  sample.receiver.ReceiveCallBack.messageArrived:148 - 回调接受：接收消息:{
+	"type":	"real_batch",
+	"sn":	"QLKJ9999999990001"

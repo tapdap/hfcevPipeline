@@ -1,0 +1,42 @@
+{
+ "can/z_qlkj9999999990001.parquet": {
+  "bytes": 5196,
+  "rows": 8,
+  "sha256": "124a18c0d631919afe539f99c75024e35c7b2d5925821bd36ae792b10b3fd8fb"
+ },
+ "can/z_qlkj9999999990002_part1.parquet": {
+  "bytes": 5050,
+  "rows": 3,
+  "sha256": "9de4eab95fa221c250e722551a5a51a4ff4d6fdfe1da8f671f170eb242f30be9"
+ },
+ "can/z_qlkj9999999990002_part2.parquet": {
+  "bytes": 5035,
+  "rows": 2,
+  "sha256": "48983ab844d5d9cd6732a6d51fae27b98c11e7d6ed85ddc6317bb5f023e7339b"
+ },
+ "can_legacy/run_parameters.parquet": {
+  "bytes": 4832,
+  "rows": 6,
+  "sha256": "1393a5de60df544ed36af714599d8288d7dbafe1d8bb326ef83a302f4365f48a"
+ },
+ "gps/z_gps_QLKJ9999999990001.parquet": {
+  "bytes": 3210,
+  "rows": 7,
+  "sha256": "470dd6c6a5c7e0ec872ec03a2a42069eabae2087669818251659f046c5a61600"
+ },
+ "gps/z_gps_QLKJ9999999990002.parquet": {
+  "bytes": 3138,
+  "rows": 3,
+  "sha256": "8ddf75179fd6c80d7492ce1b6d99f5acc993e53ffddcbbca2dd5c56ac743b430"
+ },
+ "can/z_qlkj9999999990003.parquet": {
+  "bytes": 5473,
+  "rows": 5,
+  "sha256": "c2deccfb4dbce08085f0f1fbcb306fec283f199ac37817eb66086192193aa07e"
+ },
+ "gps/z_gps_QLKJ9999999990003.parquet": {
+  "bytes": 3105,
+  "rows": 2,
+  "sha256": "2c0442f0956a6950781bd5f305390e5fbd9be5880d8adf4fe53ad9e5e7eb770a"
+ }
+}
