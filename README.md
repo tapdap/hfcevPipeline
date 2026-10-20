@@ -5,7 +5,7 @@ fleet telemetry dataset. The code turns the raw database export (L0) into the re
 data files and regenerates every figure, table and number in the data descriptor.
 
 > Release v1.0 of the dataset (100 confirmed vehicles plus one telemetry series with unresolved vehicle assignment, organised under 101 anonymous identifiers and 114 TBOX installation segments, October 2024 to May 2026) was produced
-> with version 1.0.0 of this code. The data DOI is 10.5281/zenodo.23477229; the software archive DOI will be added after registration. The code repository is
+> with version 1.0.0 of this code. The data DOI is 10.5281/zenodo.23477229; the software archive DOI is [10.5281/zenodo.23494641](https://doi.org/10.5281/zenodo.23494641). The code repository is
 > [tapdap/hfcevPipeline](https://github.com/tapdap/hfcevPipeline). The raw inputs,
 > the CAN protocol definition and the TBOX-to-vehicle map are private. The protocol checksum is
 > fixed in `configs/release_v1.toml`; stage manifests record input fingerprints, including the map
@@ -84,7 +84,7 @@ A device is recomputed only when the stage parameters or the code change, or wit
 
 If you use this code, please cite the data descriptor and the archived software version (see `CITATION.cff`).
 The code is licensed under the Apache License 2.0 (`LICENSE`); the dataset licence is CC BY 4.0.
-Data DOI: https://doi.org/10.5281/zenodo.23477229 . The software archive DOI remains pending.
+Data DOI: https://doi.org/10.5281/zenodo.23477229 . Software archive DOI (v1.0.0): [10.5281/zenodo.23494641](https://doi.org/10.5281/zenodo.23494641).
 
 ## Vehicle identity and aggregation scope
 

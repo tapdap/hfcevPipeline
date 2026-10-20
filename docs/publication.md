@@ -3,7 +3,7 @@
 The code repository and dataset deposit are separate resources. Data release v1.0 is associated
 with software version 1.0.0. Record the exact Git commit when preparing an archive; a version
 label alone does not identify changes made during publication preparation. The code repository is
-[tapdap/hfcevPipeline](https://github.com/tapdap/hfcevPipeline). The data DOI is 10.5281/zenodo.23477229; the software archive DOI remains pending.
+[tapdap/hfcevPipeline](https://github.com/tapdap/hfcevPipeline). The data DOI is 10.5281/zenodo.23477229; the software archive DOI for v1.0.0 is [10.5281/zenodo.23494641](https://doi.org/10.5281/zenodo.23494641).
 
 ## Code contents
 
@@ -73,3 +73,8 @@ Owner actions after local validation: upload the replacement data package and up
 ## Editorial revision, 20 October 2026
 
 The comparison is now manuscript Table 1 and includes fuel-cell bench datasets, the demand-power repository, JRC testing, Run on Less and NREL composite results. Fleet overview, accounting, fields and release files become Tables 2–5. Figure 1 points to accounting Table 3. This revision changes positioning, wording and presentation only; it adds no validation experiment or numerical result. Public resource descriptions use the existing cited studies, the [Mendeley repository](https://data.mendeley.com/datasets/jmf89ryh9n/1), [JRC catalogue](https://publications.jrc.ec.europa.eu/repository/handle/JRC139400), [NACFE findings](https://nacfe.org/research/run-on-less/messy-middle/final-findings/) and [NREL/NLR evaluation-centre description](https://www.nlr.gov/hydrogen/nfctec). Repository descriptions without a vehicle count or duration are reported as such. Telemetry-series terminology distinguishes data groupings from physical vehicles.
+
+
+## Published software archive
+
+Version v1.0.0 was published on 20 October 2026 from commit `b3d7907d2492ba67f33a3976f71d67adf11795de`. GitHub release: https://github.com/tapdap/hfcevPipeline/releases/tag/v1.0.0 . Zenodo software DOI: https://doi.org/10.5281/zenodo.23494641 . Subsequent citation-only commits do not move the tag or alter the archived source. Earlier preparation checklists above are historical.
