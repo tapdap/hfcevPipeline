@@ -42,7 +42,7 @@ def periods(ax, labels=False):
                color='#BDBDBD', alpha=.25, lw=0, zorder=0)
 
     if labels:
-        for date, label in [('2025-02-01', 'odometer not reported'), ('2025-12-15', 'platform data-loss period')]:
+        for date, label in [('2025-02-01', 'odometer not reported'), ('2025-12-15', 'delayed-delivery period')]:
             ax.text(mdates.datestr2num(date), 1.02, label, transform=ax.get_xaxis_transform(), ha='center', fontsize=SMALL, color='#444444')
 
 

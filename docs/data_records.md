@@ -6,7 +6,7 @@ types, units and descriptions are in the generated `dictionary.csv`; row counts 
 
 ## Identity and time
 
-- **Vehicle.** `vehicle_id` (V001 ...) is anonymous. A vehicle may carry several TBOX units over
+- **Anonymous identifier.** `vehicle_id` retains its schema name: V001–V100 identify 100 confirmed vehicles, while V101 holds one series whose vehicle assignment is unresolved. V101 does not establish an additional physical vehicle. Aggregate statistics include all 101 identifiers unless stated otherwise; exclude V101 for analyses requiring confirmed vehicle identity. A vehicle may carry several TBOX units over
   time (`unit` = 1, 2, ...; a new unit starts at a recorded TBOX replacement). TBOX numbers, plates
   and VINs are not released.
 - **Operation records** are ordered by the server receipt time `time` (stored records: rounded to the nearest second; log additions: truncated to the second). Where a
@@ -18,7 +18,7 @@ types, units and descriptions are in the generated `dictionary.csv`; row counts 
 
 | file | grain | key columns |
 |---|---|---|
-| `vehicles.csv` | vehicle | units, period, records, GPS fixes, odometer and GPS distance, GPS quality shares |
+| `vehicles.csv` | anonymous identifier | units, period, records, GPS fixes, odometer and GPS distance, GPS quality shares |
 | `operation/<vehicle>.parquet` | record | time, unit, source, measured fields, quality masks, `segment`, `gps_index`, `km_kind` |
 | `gps/<vehicle>.parquet` | fix | time, unit, fix status, usable, step distance and speed, flags (coordinates per release policy) |
 | `segments.parquet` | reporting segment | vehicle, segment, start, end, records, short |
@@ -26,7 +26,7 @@ types, units and descriptions are in the generated `dictionary.csv`; row counts 
 | `trips.parquet` | trip | vehicle, trip, start, end, active time, odometer and GPS distance, moving, hydrogen consumed, fuel-cell time and energy |
 | `fc_runs.parquet` | fuel-cell run | vehicle, segment, start, end, on time, energy, mean / p95 power |
 | `refuels.parquet` | refuelling | vehicle, before, after, pressures |
-| `daily.parquet`, `monthly.parquet` | vehicle × day / month | records, active time, distances, fuel-cell time, trips, refuels |
+| `daily.parquet`, `monthly.parquet` | anonymous identifier × day / month | records, active time, distances, fuel-cell time, trips, refuels |
 | `dictionary.csv`, `field_bits.csv` | column / mask bit | description, unit and its basis; bit → field |
 | `sample/` | one vehicle-day | CSV copies of operation and GPS rows |
 
@@ -43,7 +43,6 @@ types, units and descriptions are in the generated `dictionary.csv`; row counts 
 ## Known limitations (to be stated in Usage Notes)
 
 - TotKM is 0 for all records before June 2025 (not reported); distances then come from GPS only.
-- October 2025 – February 2026: transmission outages delayed records (receipt clock compressed,
-  `in_segment_delayed`) and thinned GPS fixes fleet-wide.
-- Units of several fields are inferred from scaling and value ranges (`unit_basis = inferred`).
-- GPS coordinates: release policy pending.
+- October 2025 – February 2026 is termed the delayed-delivery period: GPS density is lower and delayed odometer increments are more frequent; the responsible mechanism is not established.
+- Unit provenance is specified per field in `dictionary.csv`; hydrogen scaling and stack voltage/current units were confirmed by the provider.
+- GPS coordinates are rounded to 0.01 degrees; published track steps were computed before rounding.

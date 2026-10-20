@@ -58,7 +58,7 @@ def main():
         print(f'{name}: {len(members)} files')
     if args.stats:
         members = sorted(p for p in args.stats.resolve().iterdir()
-                         if p.is_file() and (p.suffix == '.parquet' or p.name in ('key_numbers.json', 'README.md')))
+                         if p.is_file() and (p.suffix == '.parquet' or p.name in ('key_numbers.json', 'manuscript_review.json', 'README.md')))
         with zipfile.ZipFile(out / 'hfcev_fleet_v1.0_statistics.zip', 'w', compression=zipfile.ZIP_DEFLATED) as z:
             for m in members:
                 info = zipfile.ZipInfo(f'statistics/{m.name}', FIXED_TIME); info.external_attr = 0o644 << 16

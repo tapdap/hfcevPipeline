@@ -4,9 +4,8 @@ Processing, validation and figure code for the hydrogen fuel-cell electric vehic
 fleet telemetry dataset. The code turns the raw database export (L0) into the released
 data files and regenerates every figure, table and number in the data descriptor.
 
-> Release v1.0 of the dataset (101 vehicles, 114 TBOX installations, October 2024 to May 2026) was produced
-> with version 1.0.0 of this code. Data and software deposits are being prepared; the data DOI,
-> software DOI will be added after registration. The code repository is
+> Release v1.0 of the dataset (100 confirmed vehicles plus one telemetry series with unresolved vehicle assignment, organised under 101 anonymous identifiers and 114 TBOX installation segments, October 2024 to May 2026) was produced
+> with version 1.0.0 of this code. The data DOI is 10.5281/zenodo.23477229; the software archive DOI will be added after registration. The code repository is
 > [tapdap/hfcevPipeline](https://github.com/tapdap/hfcevPipeline). The raw inputs,
 > the CAN protocol definition and the TBOX-to-vehicle map are private. The protocol checksum is
 > fixed in `configs/release_v1.toml`; stage manifests record input fingerprints, including the map
@@ -85,4 +84,10 @@ A device is recomputed only when the stage parameters or the code change, or wit
 
 If you use this code, please cite the data descriptor and the archived software version (see `CITATION.cff`).
 The code is licensed under the Apache License 2.0 (`LICENSE`); the dataset licence is CC BY 4.0.
-The deposit links remain pending.
+Data DOI: https://doi.org/10.5281/zenodo.23477229 . The software archive DOI remains pending.
+
+## Vehicle identity and aggregation scope
+
+V001–V100 represent 100 confirmed vehicles (operator A: 80; operator B: 20). V101 is a separate telemetry series within the study scope whose vehicle assignment is unresolved; it is not evidence of an additional physical vehicle. Published aggregate statistics include all 101 identifiers unless stated otherwise. The schema name `vehicle_id` and legacy statistics keys `vehicles` and `active_vehicle_days` retain their names but count identifiers and identifier-days. Exclude V101 when confirmed vehicle identity is required.
+
+Early records from late 2024 originate from system factory testing; in-vehicle operation began progressively from 2025. Individual installation dates are not included in the metadata. Early records are retained, and the full observation period is not equivalent to vehicle service.

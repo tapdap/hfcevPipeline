@@ -139,7 +139,7 @@ DERIVED = {
     "km_qualified": "Odometer distance (in_segment, in_segment_delayed, across_gap increments; km)",
     "moving": "Odometer or GPS-track distance >= 1 km",
     "fc_on_s": "Fuel-cell on time (FcCur > 1 A; s)", "fc_runs": "Fuel-cell runs started in the trip",
-    "energy_kwh_raw_units": "Integral of FcVol x FcCur (kWh if V and A)",
+    "energy_kwh": "Integral of FcVol x FcCur over record intervals <= 60 s (kWh)",
     "soc_start": "SOC at start (%)", "soc_end": "SOC at end (%)", "soc_min": "Minimum SOC (%)", "soc_max": "Maximum SOC (%)",
     "h2_pressure_start": "Hydrogen tank pressure at start (MPa)", "h2_pressure_end": "Hydrogen tank pressure at end (MPa)",
     "refuels": "Refuelling events identified from the telemetry (tank-pressure rises of at least 5 MPa)", "fault_state_records": "Records with the fuel-cell system in the fault state (main_state = 18)",

@@ -14,7 +14,10 @@ A vehicle may carry several TBOXes over time (replacements). The private vehicle
    installation. A TBOX moved between vehicles contributes to each vehicle within its interval.
    Units of a vehicle, and installations of a TBOX, never overlap in time.
 4. Segment and trip numbers are made unique per vehicle; derived tables (segments, gaps, trips,
-   fuel-cell runs, refuels, daily) are concatenated; monthly statistics are recomputed.
+   fuel-cell runs, refuels) are concatenated. Daily statistics are recomputed per unit from its kept
+   records and events (`core.vehicles.daily_summary`), never copied from stage-5 TBOX days, so a
+   day shared by two installations is split between them; monthly statistics follow from daily.
+   The energy integral is published as `energy_kwh` (FcVol and FcCur units confirmed as V and A).
 5. Handover check between consecutive units: odometer (last reading before, first after, km per
    day <= `handover_max_km_per_day`) and GPS position on both sides.
 
@@ -34,14 +37,14 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from .. import io
-from ..core import motion, vehicles
+from ..core import derive, motion, vehicles
 from ..core.clock import NAT, to_us
 from ..io import atomic_path, read_json, sha256_file
-from . import s1_harmonize
+from . import s1_harmonize, s5_derived
 
 NAME = "s6"
 SECTION = "s6_vehicles"
-PARAM_SECTIONS = ("s1_harmonize", SECTION)
+PARAM_SECTIONS = ("s1_harmonize", "s3_timeline", "s5_derived", SECTION)
 CODE = (vehicles, motion, io)
 LAYER = "L6_vehicles"
 CLOCK_COLUMNS = ["time_received_ms", "time_device", "time_device_status", "same_time_variants"]
@@ -50,9 +53,12 @@ FLAG_COLUMNS = ["segment", "missing_mask", "outside_encodable_mask", "all_ones_m
                 "correction_status"]
 GPS_FLAG_COLUMNS = ["coordinate_class", "hemisphere_ok", "outside_region", "speed_plausible", "device_clock_suspect"]
 TABLES = ("operation", "gps", "segments", "gaps", "trips", "fc_runs", "refuels", "daily", "monthly")
-# derived per-device tables: (layer, name, time column used for the validity interval)
+# derived per-device tables: (layer, name, time column used for the validity interval); daily is rebuilt
 DERIVED = (("L4_quality", "segments", "start"), ("L4_quality", "gaps", "start"), ("L5_derived", "trips", "start"),
-           ("L5_derived", "fc_runs", "start"), ("L5_derived", "refuels", "after"), ("L5_derived", "daily", "day"))
+           ("L5_derived", "fc_runs", "start"), ("L5_derived", "refuels", "after"))
+RENAMED = {"energy_kwh_raw_units": "energy_kwh"}
+# daily event counts: (count column, derived table, time column)
+DAILY_EVENTS = (("fc_starts", "fc_runs", "start"), ("trips", "trips", "start"), ("refuels", "refuels", "after"))
 
 
 def prepare(cfg, devices, force=False, workers=1, options=None) -> dict:
@@ -65,7 +71,8 @@ def prepare(cfg, devices, force=False, workers=1, options=None) -> dict:
     return dict(l3=str(cfg.layer("L3_timeline")), l4=str(cfg.layer("L4_quality")), l5=str(cfg.layer("L5_derived")),
                 out=str(cfg.layer(LAYER)), fields=s1_harmonize.operation_fields(cfg), inputs=inputs,
                 vehicles={v: [asdict(u) for u in us] for v, us in units.items()}, tbox_units=tbox_units,
-                devices=sorted(units),
+                devices=sorted(units), fc_on_current_a=cfg.release["s5_derived"]["fc_on_current_a"],
+                vmax=cfg.release["s3_timeline"]["gps_max_speed_kmh"],
                 **cfg.release[SECTION])
 
 
@@ -180,14 +187,20 @@ def _unit(u: dict, ctx: dict, gps_base: int) -> dict:
         if "empty" in frame.columns or not len(frame):
             derived[name] = pd.DataFrame()
             continue
-        t = _us(frame[tcol])
-        if name == "daily":  # a day belongs to the unit if it overlaps the interval
-            ok = ((inst.valid_from == NAT) | (t + 86_400_000_000 > inst.valid_from)) & ((inst.valid_to == NAT) | (t < inst.valid_to))
-        else:
-            ok = vehicles.inside(t, inst)
-        derived[name] = frame[ok].reset_index(drop=True)
+        ok = vehicles.inside(_us(frame[tcol]), inst)
+        derived[name] = frame[ok].reset_index(drop=True).rename(columns=RENAMED)
         if name == "trips":  # trips kept by start time but ending after removal keep stage-5 values
             acct["trips_ending_after_removal"] = int((ok & ~vehicles.inside(_us(frame["end"]), inst)).sum())
+    kept_gps = gps[gkeep]
+    derived["daily"] = vehicles.daily_summary(
+        dict(time=t_op, segment=op["segment"].to_numpy(), FcVol=op["FcVol"].to_numpy(), FcCur=op["FcCur"].to_numpy(),
+             km_increment=op["km_increment"].to_numpy(), km_kind=op["km_kind"].to_numpy(),
+             h2_increment=op["h2_increment"].to_numpy(), h2_attributed=op["h2_attributed"].to_numpy(), aligned=link >= 0),
+        keep, dict(time=t_gps[gkeep], usable=kept_gps["usable"].to_numpy(), fix_status=kept_gps["fix_status"].to_numpy(),
+                   step_km=kept_gps["step_km"].to_numpy(), speed_kmh=kept_gps["speed_kmh"].to_numpy()),
+        {label: _us(derived[name][col]) if len(derived[name]) else np.array([], np.int64)
+         for label, name, col in DAILY_EVENTS},
+        ctx["fc_on_current_a"], ctx["vmax"], s5_derived.DISTANCE_KINDS, (derive.NO_FIX, derive.NO_FIX_INFERRED))
     return dict(op=op[keep].reset_index(drop=True), gps=gps[gkeep].reset_index(drop=True), derived=derived,
                 seg_max=seg_max, acct=acct)
 
@@ -203,7 +216,7 @@ def _edge(op: pd.DataFrame, gps: pd.DataFrame, last: bool) -> dict:
 
 def process(vehicle: str, ctx: dict) -> dict:
     out = Path(ctx["out"])
-    ops, gpss, derived, accts, handovers = [], [], {n: [] for _, n, _ in DERIVED}, [], []
+    ops, gpss, derived, accts, handovers = [], [], {n: [] for _, n, _ in DERIVED} | {"daily": []}, [], []
     seg_off = trip_off = gps_base = 0
     prev = None
     for u in ctx["vehicles"][vehicle]:

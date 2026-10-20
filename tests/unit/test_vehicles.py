@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from hfcev.core import vehicles
 from hfcev.core.clock import NAT
@@ -15,6 +16,50 @@ def write(text: str) -> Path:
     f.write(HEADER + text)
     f.close()
     return Path(f.name)
+
+
+S = 1_000_000
+DAY = 86_400 * S
+
+
+def summary(t, keep, segment=None, gps_t=(), events=None):
+    n = len(t)
+    op = dict(time=np.array(t, np.int64), segment=np.zeros(n, int) if segment is None else np.array(segment),
+              FcVol=np.full(n, 300.0), FcCur=np.full(n, 100.0), km_increment=np.ones(n),
+              km_kind=np.array(["in_segment"] * n, dtype=object), h2_increment=np.ones(n),
+              h2_attributed=np.ones(n, bool), aligned=np.zeros(n, bool))
+    g = len(gps_t)
+    gps = dict(time=np.array(gps_t, np.int64), usable=np.ones(g, bool), fix_status=np.array(["valid"] * g, dtype=object),
+               step_km=np.full(g, 0.1), speed_kmh=np.full(g, 50.0))
+    ev = {k: np.array(v, np.int64) for k, v in (events or {}).items()}
+    ev = {k: ev.get(k, np.array([], np.int64)) for k in ("fc_starts", "trips", "refuels")}
+    return vehicles.daily_summary(op, np.array(keep, bool), gps, ev, 1.0, 150.0,
+                                  ["in_segment", "in_segment_delayed", "across_gap"], ["no_fix", "no_fix_inferred"])
+
+
+class DailySummary(unittest.TestCase):
+    def test_shared_day_is_split_not_duplicated(self):
+        # one TBOX, four records on one day; the boundary falls between the 2nd and 3rd record
+        t = [DAY + 0, DAY + 5 * S, DAY + 10 * S, DAY + 15 * S]
+        a, b = summary(t, [1, 1, 0, 0]), summary(t, [0, 0, 1, 1])
+        self.assertEqual((a["records"].sum(), b["records"].sum()), (2, 2))
+        self.assertEqual((a["active_s"].sum(), b["active_s"].sum()), (5.0, 5.0))   # 5->10 s crosses the boundary
+        self.assertEqual(a["km_qualified"].sum() + b["km_qualified"].sum(), 4.0)
+        self.assertAlmostEqual(a["energy_kwh"].sum(), 30.0 * 5 / 3600)
+
+    def test_no_row_for_a_day_without_kept_records(self):
+        # earlier installation ends at the first record of day 2: it keeps no day-2 contribution
+        t = [DAY + 3600 * S, 2 * DAY + 3600 * S, 2 * DAY + 3605 * S]
+        a = summary(t, [1, 0, 0], gps_t=[DAY + 3600 * S], events={"trips": [DAY + 3600 * S]})
+        self.assertEqual(a["day"].tolist(), [pd.Timestamp("1970-01-02")])
+        self.assertEqual((int(a["records"].iloc[0]), int(a["gps_fixes"].iloc[0]), int(a["trips"].iloc[0])), (1, 1, 1))
+
+    def test_interval_rules(self):
+        t = [0, 5 * S, 70 * S, 75 * S]          # 65 s gap is not an interval; segment change neither
+        d = summary(t, [1, 1, 1, 1], segment=[0, 0, 0, 1])
+        self.assertEqual(d["active_s"].sum(), 5.0)
+        self.assertEqual(d["records"].dtype, np.int64)
+        self.assertTrue(summary([], []).empty)
 
 
 class ReadMap(unittest.TestCase):

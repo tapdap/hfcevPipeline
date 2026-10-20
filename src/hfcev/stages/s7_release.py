@@ -322,7 +322,7 @@ def _readme(ctx: dict, vt: pd.DataFrame, checks: dict, dic: pd.DataFrame) -> str
         ctx["gps_coordinates"], f"rounded to {ctx['gps_coordinates']} decimals")
     return "\n".join([
         f"# HFCEV fleet telemetry — release v{ctx['version']} (build)", "",
-        f"- vehicles: {len(vt)} (TBOX installations: {int(vt['units'].sum())})",
+        f"- anonymous identifiers: {len(vt)} (TBOX installations: {int(vt['units'].sum())})",
         f"- operation records: {int(vt['records'].sum()):,}; GPS fixes: {int(vt['gps_fixes'].sum()):,}",
         f"- period: {vt['first_time'].min()} to {vt['last_time'].max()} (server receipt time)",
         f"- GPS coordinates: {coords}",
@@ -331,9 +331,9 @@ def _readme(ctx: dict, vt: pd.DataFrame, checks: dict, dic: pd.DataFrame) -> str
         *([f"- fields merged (one signal under two names): "
            + "; ".join(f"{t} <- {', '.join(s)}" for t, s in ctx["merged_fields"].items())] if ctx["merged_fields"] else []),
         f"- invariants: {'all passed' if checks['ok'] else 'FAILED'} (invariants.json)", "",
-        "## Files", "",
+        "## Scope and interpretation", "", ctx.get("metadata_note", ""), "", "## Files", "",
         "| path | content |", "|---|---|",
-        "| `vehicles.csv` | one row per vehicle: period, counts, distances, GPS quality shares |",
+        "| `vehicles.csv` | one row per anonymous identifier: period, counts, distances, GPS quality shares |",
         "| `operation/<vehicle>.parquet` | operation stream in receipt-time order with quality flags |",
         "| `gps/<vehicle>.parquet` | GPS fixes in device-time order with fix status and track steps |",
         "| `segments.parquet`, `gaps.parquet` | reporting segments and the no-data gaps between them |",
@@ -346,5 +346,5 @@ def _readme(ctx: dict, vt: pd.DataFrame, checks: dict, dic: pd.DataFrame) -> str
         "Values that are easily misread (also in the `caveat` column of `dictionary.csv`):", "",
         *[f"- `{r.column}`: {r.caveat}" for r in dic[(dic["table"] == "operation") & (dic["caveat"] != "")].itertuples()],
         "- `time` (operation stream): after a transmission outage, delayed records arrive in a burst, so differences of "
-        "`time` do not measure acquisition intervals there; use `time_device` where verified, or records with "
-        "`same_time_variants` = 1 inside segments, for transient analyses.", ""])
+        "`time` do not measure acquisition intervals there; use `time_device` where verified, and treat receipt intervals as arrival intervals elsewhere. "
+        "`same_time_variants` = 1 does not exclude buffered records arriving in different seconds.", ""])

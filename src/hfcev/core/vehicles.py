@@ -13,11 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from .clock import NAT
 from .motion import haversine_km
 
 REQUIRED = ("vehicle_id", "tbox", "unit", "valid_from", "valid_to", "status")
+DAY_US = 86_400_000_000
+COUNT_COLUMNS = ("records", "aligned", "gps_fixes", "gps_usable", "gps_no_fix", "fc_starts", "trips", "refuels")
 
 
 @dataclass(frozen=True)
@@ -86,6 +89,52 @@ def inside(t_us: np.ndarray, inst: Installation) -> np.ndarray:
     if inst.valid_to != NAT:
         ok &= t_us < inst.valid_to
     return ok
+
+
+def daily_summary(op: dict, keep: np.ndarray, gps: dict, events: dict, fc_on_current_a: float, vmax: float,
+                  distance_kinds, no_fix_labels) -> pd.DataFrame:
+    """Daily statistics of one installation from its kept records only.
+
+    op: arrays of the TBOX's whole operation stream in receipt order (time [us], segment, FcVol,
+    FcCur, km_increment, km_kind, h2_increment, h2_attributed, aligned); keep marks the records of
+    this installation. An interval counts (on the day of its first record) only if both records are
+    kept, lie in one segment and are 0 < dt <= 60 s apart, so nothing is drawn from outside the
+    installation. Odometer and hydrogen increments count on the record that carries them. gps: arrays
+    of the kept fixes in device-time order (time [us], usable, fix_status, step_km, speed_kmh).
+    events: kept event times [us] per count column (fc_starts, trips, refuels).
+    Operation days use the receipt clock, GPS days the device clock (same local calendar).
+    """
+    t = np.asarray(op["time"], dtype=np.int64)
+    keep = np.asarray(keep, dtype=bool)
+    seg, n = np.asarray(op["segment"]), len(t)
+    dt = np.r_[np.diff(t) / 1e6, np.nan][:n]
+    dt_ok = (dt > 0) & (dt <= 60) & np.r_[(seg[1:] == seg[:-1]) & keep[1:], False][:n] & keep
+    fc_vol, fc_cur = (np.asarray(op[c], dtype=float) for c in ("FcVol", "FcCur"))
+    power_kw = np.where(np.isfinite(fc_vol) & np.isfinite(fc_cur), fc_vol * fc_cur / 1000, np.nan)
+    on = np.isfinite(fc_cur) & (fc_cur > fc_on_current_a)
+    km_inc, kind = np.asarray(op["km_increment"], dtype=float), np.asarray(op["km_kind"], dtype=object)
+    h2_attr = pd.Series(op["h2_attributed"], dtype=object).fillna(False).astype(bool).to_numpy()
+    ops = pd.DataFrame({
+        "day": t // DAY_US, "records": 1, "active_s": np.where(dt_ok, dt, 0),
+        "km_qualified": np.where(np.isin(kind, list(distance_kinds)), km_inc, 0),
+        "km_delayed": np.where(kind == "in_segment_delayed", km_inc, 0),
+        "h2_kg": np.where(h2_attr, np.asarray(op["h2_increment"], dtype=float), 0),
+        "fc_on_s": np.where(dt_ok & on, dt, 0),
+        "energy_kwh": np.where(dt_ok, np.nan_to_num(power_kw) * np.nan_to_num(dt) / 3600, 0),
+        "aligned": np.asarray(op["aligned"], dtype=bool)})[keep].groupby("day").sum()
+    gt, speed = np.asarray(gps["time"], dtype=np.int64), np.asarray(gps["speed_kmh"], dtype=float)
+    gd = pd.DataFrame({"day": gt // DAY_US, "gps_fixes": 1, "gps_usable": np.asarray(gps["usable"], dtype=bool),
+                       "gps_no_fix": np.isin(np.asarray(gps["fix_status"], dtype=object), list(no_fix_labels)),
+                       "gps_km": np.where(np.isfinite(speed) & (speed <= vmax), np.asarray(gps["step_km"], dtype=float), 0)
+                       }).groupby("day").sum()
+    daily = ops.join(gd, how="outer").fillna(0)
+    for label, times in events.items():
+        counts = pd.Series(np.asarray(times, dtype=np.int64) // DAY_US).value_counts()
+        daily[label] = counts.reindex(daily.index).fillna(0)
+    for c in COUNT_COLUMNS:
+        daily[c] = daily[c].astype(np.int64)
+    daily.index = pd.to_datetime(daily.index.to_numpy() * DAY_US, unit="us")
+    return daily.rename_axis("day").reset_index()
 
 
 def handover(prev: dict, nxt: dict, max_km_per_day: float) -> dict:

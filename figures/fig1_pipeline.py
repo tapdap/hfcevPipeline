@@ -112,7 +112,7 @@ def main():
         ('s3', 'Timestamps', f'clock checks\nlog supplement\n+{fmt(n["log_additions_operation"])} op.\n+{fmt(n["log_additions_gps"])} GPS', 'proc'),
         ('s4', 'Quality', f'segments, gaps\nfield, GPS flags\ndecoding fix\n{fmt(n["segments"])} segm.', 'proc'),
         ('s5', 'Derived', f'GPS status, track\nodometer, H$_2$\n{fmt(n["trips"])} trips\n{fmt(fc_runs)} FC runs\n{fmt(n["refuels"])} refuels', 'proc'),
-        ('s6', 'Vehicles', f'{n["tbox_installations"]} installations\n→ {n["vehicles"]} vehicles\n−{fmt(a("operation", "4_excluded_outside_installation"))} op.\n−{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
+        ('s6', 'Vehicles', f'{n["tbox_installations"]} installations\n→ {n["vehicles"]} identifiers\n−{fmt(a("operation", "4_excluded_outside_installation"))} op.\n−{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
         ('s7', 'Release', f'{n["fields_released"]} fields\nanonymous IDs\ndictionary\nchecksums', 'rel'),
     ]
     for k, (t, title, body, kind) in enumerate(stages):
@@ -133,7 +133,7 @@ def main():
     ax.add_patch(FancyBboxPatch((s6x - 26, yb + 3.2), 52, 5, boxstyle='round,pad=0,rounding_size=1', fc=FILL['veh'], ec=EDGE['veh'], lw=.5))
     text(ax, s6x, yb + 5.7, 'registry · inventories · replacement records', size=FS_S, color=EDGE['veh'], ha='center', va='center')
     arrow(ax, (s6x, yb + 8.2), (s6x, ys), color=EDGE['veh'], ls=(0, (2, 1.5)))
-    text(ax, x0, ys + hs + 2, 'Every record is accounted for from input to release (Table 3);\nmeasured values are not altered or interpolated.', size=FS_S, color=MUTED)
+    text(ax, x0, ys + hs + 2, 'Every record is accounted for from input to release (Table 2);\ndocumented corrections; no signal interpolation.', size=FS_S, color=MUTED)
 
     # ---------------------------------------------------------------- c: release
     yc = 117
@@ -145,7 +145,7 @@ def main():
             (122, 'Metadata', 'vehicles · dictionary (units, caveats)\nquality-bit map · SHA-256 manifest\nCSV sample · processing code', 'veh')]
     for x, title, body, kind in cols:
         box(ax, x, yc + 6.5, 57, 18, kind); text(ax, x + 3, yc + 8.3, title, size=FS, weight='bold'); text(ax, x + 3, yc + 13.2, body, size=FS_S, color=MUTED)
-    text(ax, 4, yc + 27.5, f'{n["vehicles"]} vehicles · {n["period"][0][:7]} to {n["period"][1][:7]} · '
+    text(ax, 4, yc + 27.5, f'{n["vehicles"]} identifiers · {n["period"][0][:7]} to {n["period"][1][:7]} · '
                            f'GPS coordinates rounded to 0.01°; no altitude in the payload.', size=FS_S, color=MUTED)
 
     style.save(fig, i.out, 'fig1_pipeline')

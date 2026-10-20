@@ -375,10 +375,10 @@ def finalize(cfg, ctx: dict, records: dict, log=print) -> dict:
 def _hydrogen(rel: Path, s5: dict) -> dict:
     """Restored hydrogen counter: wraps (per TBOX, stage 5) and consumption over released vehicle-days
     with both odometer distance and attributed consumption; per-vehicle rates for >= 1000 km / kWh."""
-    d = pd.read_parquet(rel / "daily.parquet", columns=["vehicle_id", "km_qualified", "h2_kg", "energy_kwh_raw_units"])
+    d = pd.read_parquet(rel / "daily.parquet", columns=["vehicle_id", "km_qualified", "h2_kg", "energy_kwh"])
     both = d[(d["km_qualified"] > 0) & (d["h2_kg"] > 0)]
-    per = both.groupby("vehicle_id")[["km_qualified", "h2_kg", "energy_kwh_raw_units"]].sum()
-    km, kg, kwh = (float(both[c].sum()) for c in ("km_qualified", "h2_kg", "energy_kwh_raw_units"))
+    per = both.groupby("vehicle_id")[["km_qualified", "h2_kg", "energy_kwh"]].sum()
+    km, kg, kwh = (float(both[c].sum()) for c in ("km_qualified", "h2_kg", "energy_kwh"))
     q = lambda x: {k: float(x.quantile(v)) for k, v in (("p10", .1), ("p50", .5), ("p90", .9))} if len(x) else {}
     h5 = [r.get("hydrogen") or {} for r in s5.values()]
     return dict(kg_attributed=float(d["h2_kg"].sum()), wraps=int(sum(h.get("wraps", 0) for h in h5)),
@@ -386,7 +386,7 @@ def _hydrogen(rel: Path, s5: dict) -> dict:
                 vehicle_days_with_both=int(len(both)), km=km, kg=kg, kwh=kwh,
                 fleet_kg_per_100km=kg / km * 100 if km else None, fleet_kg_per_kwh=kg / kwh if kwh else None,
                 vehicle_kg_per_100km=q((per["h2_kg"] / per["km_qualified"] * 100)[per["km_qualified"] >= 1000]),
-                vehicle_kg_per_kwh=q((per["h2_kg"] / per["energy_kwh_raw_units"])[per["energy_kwh_raw_units"] >= 1000]))
+                vehicle_kg_per_kwh=q((per["h2_kg"] / per["energy_kwh"])[per["energy_kwh"] >= 1000]))
 
 
 def _clock_totals(out: Path) -> dict:

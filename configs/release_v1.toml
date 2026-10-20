@@ -107,6 +107,7 @@ h2_wrap_inference_min_km = 1000
 handover_max_km_per_day = 400
 
 [s7_release]
+metadata_note = "For the real-data release v1.0, V001–V100 represent 100 confirmed vehicles (A: 80; B: 20); V101 is a series within the study scope with unresolved vehicle assignment, not an additional confirmed vehicle. Aggregate totals include all 101 identifiers unless stated otherwise. The vehicle_id schema name and legacy vehicles/active_vehicle_days statistics keys count identifiers and identifier-days. Exclude V101 for analyses requiring confirmed vehicle identity. Early records from late 2024 are system factory tests; in-vehicle operation began progressively from 2025. Individual installation dates are not included in the metadata. Early records are retained and the full recording period is not vehicle service. The provider confirms that 2024-09-30 is not an actual GPS observation date; rows labelled with that date should not establish GPS coverage."
 # Fields missing in at least this share of all records (fleet-wide) are not published.
 drop_missing_share = 0.99
 # Dictionary notes: fields missing at least this share are marked sparse ...

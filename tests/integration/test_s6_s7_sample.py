@@ -52,6 +52,31 @@ class SampleRun(unittest.TestCase):
         dt = (gps["time"].to_numpy()[x["gps_index"].astype(int)] - x["time"].to_numpy()) / pd.Timedelta(seconds=1)
         self.assertTrue(((dt - x["gps_offset_s"]).abs() < 1e-6).all())
 
+    def test_daily_matches_released_records(self):
+        # daily rows are rebuilt from the kept records: per vehicle and day they equal the record-level files
+        daily = pd.read_parquet(self.rel / "daily.parquet")
+        for vid, d in daily.groupby("vehicle_id"):
+            op = pd.read_parquet(self.rel / "operation" / f"{vid}.parquet")
+            gps = pd.read_parquet(self.rel / "gps" / f"{vid}.parquet")
+            d = d.set_index(pd.to_datetime(d["day"]).dt.normalize())
+            ops_day, gps_day = op["time"].dt.normalize(), gps["time"].dt.normalize()
+            pd.testing.assert_series_equal(d["records"], op.groupby(ops_day).size().reindex(d.index, fill_value=0),
+                                           check_names=False, check_dtype=False)
+            pd.testing.assert_series_equal(d["gps_fixes"], gps.groupby(gps_day).size().reindex(d.index, fill_value=0),
+                                           check_names=False, check_dtype=False)
+            km = np.where(op["km_kind"].isin(["in_segment", "in_segment_delayed", "across_gap"]), op["km_increment"], 0)
+            self.assertAlmostEqual(d["km_qualified"].sum(), float(np.nansum(km)))
+            self.assertTrue((d["records"] + d["gps_fixes"] > 0).all())    # no day without kept records
+        self.assertEqual(int(daily["records"].sum()), self.s7_rows("operation"))
+        monthly = pd.read_parquet(self.rel / "monthly.parquet")
+        self.assertEqual(int(monthly["records"].sum()), int(daily["records"].sum()))
+        for name in ("daily", "monthly", "trips", "fc_runs"):
+            cols = pd.read_parquet(self.rel / f"{name}.parquet").columns
+            self.assertIn("energy_kwh", cols); self.assertNotIn("energy_kwh_raw_units", cols)
+
+    def s7_rows(self, stream):
+        return sum(len(pd.read_parquet(p)) for p in (self.rel / stream).glob("*.parquet"))
+
     def test_release_invariants_and_privacy(self):
         inv = json.loads((self.rel / "invariants.json").read_text())
         self.assertTrue(inv["ok"])

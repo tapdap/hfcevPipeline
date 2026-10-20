@@ -32,7 +32,7 @@
       "affiliation": "MoE Key Laboratory of Artificial Intelligence, AI Institute, Shanghai Jiao Tong University"
     }
   ],
-  "description": "Code that turns the raw platform exports and server receive logs of a fleet of 101 hydrogen fuel-cell heavy-duty trucks into the released dataset (release v1.0), validates it, and regenerates every figure, table and number of the data descriptor. Includes a synthetic sample that runs all stages.",
+  "description": "Code that turns the raw platform exports and server receive logs of 100 confirmed hydrogen fuel-cell heavy-duty trucks and one additional telemetry series with unresolved vehicle assignment into the released dataset (release v1.0), validates it, and regenerates every figure, table and number of the data descriptor. Includes a synthetic sample that runs all stages.",
   "license": "Apache-2.0",
   "access_right": "open",
   "language": "eng",
