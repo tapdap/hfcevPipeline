@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below, together with the data descriptor and the dataset."
 title: "HFCEV fleet telemetry: processing, validation and figure code"
 version: 1.0.0
-date-released: 2026-10-19
+date-released: 2026-10-20
 license: Apache-2.0
 type: software
 repository-code: "https://github.com/tapdap/hfcevPipeline"

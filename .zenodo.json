@@ -43,5 +43,13 @@
     "fleet telemetry",
     "data quality",
     "Python"
+  ],
+  "publication_date": "2026-10-20",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.23477229",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    }
   ]
 }
