@@ -110,9 +110,9 @@ def main():
     w, gap, x0, ys, hs = 25.4, 3.5, 39, yb + 11, 27
     stages = [
         ('s3', 'Timestamps', f'clock checks\nlog supplement\n+{fmt(n["log_additions_operation"])} op.\n+{fmt(n["log_additions_gps"])} GPS', 'proc'),
-        ('s4', 'Quality', f'segments, gaps\nfield, GPS flags\ndecoding fix\n{fmt(n["segments"])} segm.', 'proc'),
-        ('s5', 'Derived', f'GPS status, track\nodometer, H$_2$\n{fmt(n["trips"])} trips\n{fmt(fc_runs)} FC runs\n{fmt(n["refuels"])} refuels', 'proc'),
-        ('s6', 'Vehicles', f'{n["tbox_installations"]} installations\n→ {n["vehicles"]} identifiers\n−{fmt(a("operation", "4_excluded_outside_installation"))} op.\n−{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
+        ('s4', 'Quality', f'segments, gaps\nfield, GPS flags\ndecoding fix\n{fmt(n["segments_stage4_all_tbox"])} segm.', 'proc'),
+        ('s5', 'Derived', 'GPS status, track\nodometer, H$_2$\ntrips · FC runs\nrefuelling events', 'proc'),
+        ('s6', 'Assembly', f'{n["tbox_installations"]} installations\n→ {n["vehicles"]} identifiers\n−{fmt(a("operation", "4_excluded_outside_installation"))} op.\n−{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
         ('s7', 'Release', f'{n["fields_released"]} fields\nanonymous IDs\ndictionary\nchecksums', 'rel'),
     ]
     for k, (t, title, body, kind) in enumerate(stages):
@@ -139,10 +139,14 @@ def main():
     yc = 117
     text(ax, 4, yc, 'c', size=style.LETTER, weight='bold'); text(ax, 9, yc + .4, 'Release package', size=FS_T, weight='bold')
     s7x = x0 + 4 * (w + gap) + w / 2
-    arrow(ax, (s7x, ys + hs), (s7x, yc + 6.5))
+    # One release stage produces all three package components.
+    branch_y = yc + 4
+    ax.plot([s7x, s7x, 32.5], [ys + hs, branch_y, branch_y], color=LINE, lw=.9)
+    for center in (32.5, 91.5, 150.5):
+        arrow(ax, (center, branch_y), (center, yc + 6.5))
     cols = [(4, 'Records with quality flags', f'{fmt(n["operation_records"])} operation records\n{fmt(n["gps_fixes"])} GPS fixes\nper series, Apache Parquet', 'src'),
             (63, 'Events and summaries', f'segments · gaps · {fmt(n["trips"])} trips\nfuel-cell runs · refuelling events\ndaily and monthly tables', 'rel'),
-            (122, 'Metadata', 'vehicles · dictionary (units, caveats)\nquality-bit map · SHA-256 manifest\nCSV sample · processing code', 'veh')]
+            (122, 'Metadata and documentation', 'vehicles · dictionary (units, caveats)\nquality-bit map · SHA-256 manifest\nCSV sample · README', 'veh')]
     for x, title, body, kind in cols:
         box(ax, x, yc + 6.5, 57, 18, kind); text(ax, x + 3, yc + 8.3, title, size=FS, weight='bold'); text(ax, x + 3, yc + 13.2, body, size=FS_S, color=MUTED)
     text(ax, 4, yc + 27.5, f'{n["vehicles"]} identifiers · {n["period"][0][:7]} to {n["period"][1][:7]} · '
