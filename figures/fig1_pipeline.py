@@ -133,14 +133,14 @@ def main():
     ax.add_patch(FancyBboxPatch((s6x - 26, yb + 3.2), 52, 5, boxstyle='round,pad=0,rounding_size=1', fc=FILL['veh'], ec=EDGE['veh'], lw=.5))
     text(ax, s6x, yb + 5.7, 'registry · inventories · replacement records', size=FS_S, color=EDGE['veh'], ha='center', va='center')
     arrow(ax, (s6x, yb + 8.2), (s6x, ys), color=EDGE['veh'], ls=(0, (2, 1.5)))
-    text(ax, x0, ys + hs + 2, 'Every record is accounted for from input to release (Table 2);\ndocumented corrections; no signal interpolation.', size=FS_S, color=MUTED)
+    text(ax, x0, ys + hs + 2, 'Every record is accounted for from input to release (Table 3);\ndocumented corrections; no signal interpolation.', size=FS_S, color=MUTED)
 
     # ---------------------------------------------------------------- c: release
     yc = 117
     text(ax, 4, yc, 'c', size=style.LETTER, weight='bold'); text(ax, 9, yc + .4, 'Release package', size=FS_T, weight='bold')
     s7x = x0 + 4 * (w + gap) + w / 2
     arrow(ax, (s7x, ys + hs), (s7x, yc + 6.5))
-    cols = [(4, 'Records with quality flags', f'{fmt(n["operation_records"])} operation records\n{fmt(n["gps_fixes"])} GPS fixes\nper vehicle, Apache Parquet', 'src'),
+    cols = [(4, 'Records with quality flags', f'{fmt(n["operation_records"])} operation records\n{fmt(n["gps_fixes"])} GPS fixes\nper series, Apache Parquet', 'src'),
             (63, 'Events and summaries', f'segments · gaps · {fmt(n["trips"])} trips\nfuel-cell runs · refuelling events\ndaily and monthly tables', 'rel'),
             (122, 'Metadata', 'vehicles · dictionary (units, caveats)\nquality-bit map · SHA-256 manifest\nCSV sample · processing code', 'veh')]
     for x, title, body, kind in cols:

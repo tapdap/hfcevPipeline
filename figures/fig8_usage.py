@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 MIN_RUN_S = 60        # fuel-cell runs shorter than this are not shown in b
-MIN_MONTH_KM = 1000   # identifier-months with less qualified distance are not used in c
+MIN_MONTH_KM = 1000   # series-months with less qualified distance are not used in c
 
 
 def main():
@@ -19,12 +19,12 @@ def main():
     fig, axs = plt.subplots(2, 2, figsize=(style.DOUBLE, 120 * style.MM), layout='constrained')
     a, b, c, d = axs.ravel()
 
-    # a: daily distance per identifier-day (odometer reported from June 2025)
+    # a: daily distance per series-day (odometer reported from June 2025)
     km = daily.loc[daily.km_qualified > 0, 'km_qualified']
     a.hist(km, bins=np.arange(0, 801, 20), color=style.COLORS['operation'], lw=0)
     a.axvline(km.median(), color=style.COLORS['anomaly'], lw=.9, ls='--')
     a.text(km.median() + 12, .95, f'median {km.median():.0f} km', transform=a.get_xaxis_transform(), va='top', fontsize=style.SMALL)
-    a.set(xlabel='Odometer distance per identifier-day (km)', ylabel='Identifier-days', xlim=(0, 800))
+    a.set(xlabel='Odometer distance per series-day (km)', ylabel='Series-days', xlim=(0, 800))
     style.panel(a, 'a')
 
     # b: fuel-cell runs, mean power against duration
@@ -37,7 +37,7 @@ def main():
     b.set(xscale='log', xlabel='Fuel-cell run duration (min)', ylabel='Mean stack power (kW)', ylim=(0, 172))
     style.panel(b, 'b')
 
-    # c: monthly hydrogen consumption per 100 km (identifier-days with both distance and consumption)
+    # c: monthly hydrogen consumption per 100 km (series-days with both distance and consumption)
     both = daily[(daily.km_qualified > 0) & (daily.h2_kg > 0)].copy()
     both['month'] = pd.to_datetime(both.day).dt.to_period('M')
     vm = both.groupby(['vehicle_id', 'month'])[['km_qualified', 'h2_kg']].sum()
@@ -45,8 +45,8 @@ def main():
     q = vm.groupby('month').rate.quantile([.25, .5, .75]).unstack()
     fleet = both.groupby('month')[['km_qualified', 'h2_kg']].sum(); fleet = fleet.h2_kg / fleet.km_qualified * 100
     t = q.index.to_timestamp() + pd.Timedelta(days=14)
-    c.fill_between(t, q[.25], q[.75], color=style.COLORS['sky'], alpha=.35, lw=0, label='identifiers, IQR')
-    c.plot(t, q[.5], color=style.COLORS['operation'], marker='o', label='identifiers, median')
+    c.fill_between(t, q[.25], q[.75], color=style.COLORS['sky'], alpha=.35, lw=0, label='series, IQR')
+    c.plot(t, q[.5], color=style.COLORS['operation'], marker='o', label='series, median')
     c.plot(fleet.index.to_timestamp() + pd.Timedelta(days=14), fleet.values, color=style.COLORS['anomaly'], ls='--', lw=1, label='fleet total')
     c.set(ylabel='Hydrogen (kg per 100 km)'); c.legend(frameon=False, loc='upper left', ncols=3)
     c.set_ylim(0, max(14, float(q[.75].max()) * 1.25))
@@ -63,11 +63,11 @@ def main():
 
     style.save(fig, i.out, 'fig8_usage')
     caption = ('Examples of analyses supported directly by the released event and calendar tables. '
-               'a, Qualified odometer distance per identifier-day (from June 2025, when the odometer is reported). '
+               'a, Qualified odometer distance per series-day (from June 2025, when the odometer is reported). '
                f'b, Mean stack power against duration of fuel-cell runs of at least {MIN_RUN_S} s (stack power from FcVol × FcCur); '
                'the dotted line marks the stack manufacturer\'s announced power rating, distinct from the system rating. '
-               f'c, Monthly hydrogen consumption per 100 km on identifier-days with both odometer distance and attributed consumption; '
-               f'identifier quartiles use identifier-months with at least {MIN_MONTH_KM:,} km, the dashed line is the fleet total. '
+               f'c, Monthly hydrogen consumption per 100 km on series-days with both odometer distance and attributed consumption; '
+               f'identifier quartiles use series-months with at least {MIN_MONTH_KM:,} km, the dashed line is the fleet total. '
                'd, Corrected tank pressure before and after each refuelling event; the dotted line marks the 35 MPa working pressure.')
     i.evidence('fig8_usage', dict(
         vehicle_days_with_distance=int(len(km)), daily_km_median=float(km.median()),
