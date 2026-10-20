@@ -62,13 +62,7 @@ def main():
     style.panel(d, 'd')
 
     style.save(fig, i.out, 'fig8_usage')
-    caption = ('Examples of analyses supported directly by the released event and calendar tables. '
-               'a, Qualified odometer distance per series-day (from June 2025, when the odometer is reported). '
-               f'b, Mean stack power against duration of fuel-cell runs of at least {MIN_RUN_S} s (stack power from FcVol × FcCur); '
-               'the dotted line marks the stack manufacturer\'s announced power rating, distinct from the system rating. '
-               f'c, Monthly hydrogen consumption per 100 km on series-days with both odometer distance and attributed consumption; '
-               f'identifier quartiles use series-months with at least {MIN_MONTH_KM:,} km, the dashed line is the fleet total. '
-               'd, Corrected tank pressure before and after each refuelling event; the dotted line marks the 35 MPa working pressure.')
+    caption = 'Usage examples from event and calendar tables. a, Positive odometer distance per series-day; 82 days above 800 km are outside the displayed range, but are included in the median. b, Mean stack power versus fuel-cell on-time for runs of at least 60 s; colour denotes run counts and the dotted line marks the stack manufacturer’s 159 kW rating. Power is calculated as FcVol × FcCur. c, Monthly hydrogen consumption: series median and interquartile range, and the distance-weighted fleet aggregate (dashed). d, Tank pressures before and after refuelling; the dotted line marks 35 MPa.'
     i.evidence('fig8_usage', dict(
         vehicle_days_with_distance=int(len(km)), daily_km_median=float(km.median()),
         runs_shown=int(len(r)), run_minutes_median=float((r.on_s / 60).median()), run_power_median_kw=float(r.mean_power_kw.median()),

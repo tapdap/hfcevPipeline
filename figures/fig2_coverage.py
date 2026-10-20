@@ -23,7 +23,7 @@ def main():
     daily = fleet.set_index(pd.to_datetime(fleet.day)).reindex(days)
     t = daily.index
     top.plot(t, daily.vehicles, color=style.COLORS['operation'])
-    top.set_ylabel('Active identifiers'); style.panel(top, 'a', f"Temporal coverage · {i.n['vehicles']} identifiers")
+    top.set_ylabel('Series with records'); style.panel(top, 'a', f"Temporal coverage · {i.n['vehicles']} identifiers")
     dist.plot(t, daily.km.where(t >= pd.Timestamp('2025-06-01')), color=style.COLORS['log']); dist.set_ylabel('Distance (km)'); dist.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v:,.0f}'))
     for a in (top, dist):
         style.periods(a, labels=a is top); style.dates(a); a.tick_params(labelbottom=False)
@@ -34,10 +34,10 @@ def main():
                    extent=[x[0]-.5, x[-1]+.5, len(order)-.5, -.5], interpolation='nearest')
     for r in spans[spans.unit > 1].itertuples():
         ax.plot(pd.Timestamp(r.first_time), order.get_loc(r.vehicle_id), marker='v', color='black', ms=2, mew=.5)
-    ax.set_yticks([]); ax.set_ylabel('Anonymous identifiers (n = 101), ordered by first record')
-    style.dates(ax); ax.set_xlabel('Receipt date'); style.panel(ax, 'b', 'Daily active hours; orange ticks mark a new unit')
+    ax.set_yticks([]); ax.set_ylabel('Anonymous identifiers (n = 101), ordered by first retained date')
+    style.dates(ax); ax.set_xlabel('Calendar date'); style.panel(ax, 'b', 'Daily active hours; orange ticks mark a new unit')
     fig.colorbar(im, ax=ax, label='Active hours per day', fraction=.025, pad=.02)
-    caption = ('Fleet observations vary over time, with odometer coverage beginning in June 2025. a, Daily active identifiers and qualified odometer distance; absent days are left blank. b, Daily active hours for 101 anonymous identifiers (100 confirmed vehicles and one unresolved series) ordered by first record; white denotes no records and black triangles mark the first operation record of a replacement unit. Blue shading denotes the period without odometer reporting; grey denotes the October 2025–February 2026 delayed-delivery period.')
+    caption = 'Fleet coverage over time. a, Daily number of series with records and qualified odometer distance. b, Operating-record active hours for 101 series, ordered by their first retained date; white denotes no daily row and triangles mark replacement TBOX units. Blue shading marks unavailable odometer reporting before June 2025; grey marks the October 2025–February 2026 delayed-delivery period.'
     i.evidence('fig2_coverage', dict(vehicles=len(order), vehicle_days=len(c), daily_records=int(c.records.sum()), peak_active=int(fleet.vehicles.max()),
                                  odometer_km=float(fleet.km.sum()), replacement_units=int((spans.unit>1).sum())), caption)
     style.save(fig,i.out,'fig2_coverage')

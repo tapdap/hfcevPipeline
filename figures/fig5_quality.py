@@ -29,7 +29,7 @@ def main():
         b.bar(pd.to_datetime(g.month)+pd.Timedelta(days=14),share,bottom=bottom,label=label,color=color,width=24);bottom+=share
     b.set(ylim=(0,100),ylabel='GPS fixes (%)',xlabel='Device month');style.dates(b);b.legend(ncol=3,loc='lower right',bbox_to_anchor=(1,1.0),frameon=False,fontsize=style.SMALL)
     style.panel(b,'b','')
-    caption=('Field availability changes around June 2025, while the GPS status distribution combines directly reported and inferred fix status. a, Monthly missing shares for fields reaching 0.01% missing in at least one month; the dotted line marks June 2025. Remaining fields are complete to within 0.01% in each observed month: '+', '.join(full.index[~selected])+'. b, Valid / assumed combines valid and valid-assumed fixes, before the additional usable-field clock and uniqueness checks; no fix combines reported and inferred no-fix status; stuck denotes static positions while moving. Direct result codes are available only where receive logs provide them. The displayed device-month axis begins in October 2024; earlier fixes remain included in fleet totals.')
+    caption = 'Field and GPS quality. a, Monthly missing shares for fields reaching 0.01% missing in any month; the other 24 fields remain below this threshold. b, GPS status shares: Valid / assumed combines valid and valid-assumed; No fix combines reported and inferred no-fix; Stuck denotes static positions while moving. These status groups differ from the stricter usable flag.'
     i.evidence('fig5_quality',dict(fields=len(full),shown_fields=list(heat.index),gps_fixes=int(g.fixes.sum()),status_total=int(g[cols].sum().sum()),operation_records_per_field=totals.records.astype(int).to_dict()),caption)
     style.save(fig,i.out,'fig5_quality')
 

@@ -13,7 +13,7 @@ from matplotlib.colors import LogNorm
 def main():
     i=Inputs();v=i.table('vehicles');n=i.n
     rows=[('Anonymous identifiers',f"{n['vehicles']:,}"),('Operator groups (anonymous)',f"A: {(v.operator_group=='A').sum()}; B: {(v.operator_group=='B').sum()}; unassigned: {v.operator_group.isna().sum()}"),
-          ('Observation period',n['period'][0][:10]+' to '+n['period'][1][:10]),('Active series-days',f"{n['active_vehicle_days']:,}"),
+          ('Observation period',n['period'][0][:10]+' to '+n['period'][1][:10]),('Recorded series-days',f"{n['active_vehicle_days']:,}"),
           ('Operation records',f"{n['operation_records']:,}"),('GPS fixes',f"{n['gps_fixes']:,}"),('Unit installations',f"{n['tbox_installations']:,}"),
           ('Vehicles with replacement units',f"{n['vehicles_with_tbox_change']:,}"),('Qualified odometer distance (km)',f"{n['odometer_km']:,.0f}"),
           ('Fuel-cell on-time (h)',f"{n['fc_on_hours']:,.0f}"),('Trips / moving trips',f"{n['trips']:,} / {n['trips_moving']:,}"),('Refuelling events',f"{n['refuels']:,}"),

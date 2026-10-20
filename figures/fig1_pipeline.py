@@ -7,7 +7,7 @@ from figures import style
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Ellipse, Rectangle, FancyArrowPatch
 
-W, H = 183, 149                      # mm
+W, H = 183, 150                      # mm
 INK, MUTED, LINE = '#1F2D3A', '#4A5A68', '#6B7B88'
 FILL = dict(power='#E8F3EC', acq='#FCF3DC', proc='#FFFFFF', src='#EAF1F8', veh='#F3ECF6', rel='#EAF5EF', panel='#F6F8FA')
 EDGE = dict(power='#3D8B5A', acq='#C9A227', proc='#4F6D8A', src='#4F6D8A', veh='#8A5AA0', rel='#3D8B5A', panel='#D5DDE4')
@@ -38,11 +38,11 @@ def signals(ax, x, y, w, s):
 
 
 def tank(ax, x, y):
-    for k in range(3):
-        cx = x + 3 + k * 4.6
-        ax.add_patch(Rectangle((cx - 1.8, y), 3.6, 8, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
-        ax.add_patch(Ellipse((cx, y), 3.6, 1.6, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
-        ax.add_patch(Ellipse((cx, y + 8), 3.6, 1.6, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
+    for k in range(6):
+        cx = x + 1.5 + k * 2.8
+        ax.add_patch(Rectangle((cx - 1.1, y), 2.2, 8, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
+        ax.add_patch(Ellipse((cx, y), 2.2, 1.2, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
+        ax.add_patch(Ellipse((cx, y + 8), 2.2, 1.2, fc='#CFE6D7', ec=EDGE['power'], lw=.6))
 
 
 def stack(ax, x, y):
@@ -74,18 +74,19 @@ def main():
     # ---------------------------------------------------------------- a: vehicle and acquisition
     ax.add_patch(FancyBboxPatch((2, 2), 179, 60, boxstyle='round,pad=0,rounding_size=2', fc=FILL['panel'], ec=EDGE['panel'], lw=.7))
     text(ax, 4, 4.2, 'a', size=style.LETTER, weight='bold'); text(ax, 9, 4.6, 'Vehicle and data acquisition', size=FS_T, weight='bold')
-    box(ax, 5, 11, 88, 49, 'power', lw=.7); text(ax, 7, 12.5, 'Fuel-cell powertrain', size=FS, weight='bold', color=EDGE['power'])
+    box(ax, 5, 11, 88, 49, 'power', lw=.7); text(ax, 7, 12.5, 'Fuel-cell powertrain (schematic)', size=FS, weight='bold', color=EDGE['power'])
     tank(ax, 10, 20); text(ax, 18, 30.5, 'Hydrogen tanks\n6 × 410 L, 35 MPa', size=FS_S, ha='center')
-    signals(ax, 6.5, 37.5, 25, 'HyBottleP · TotH2Kg\nhydncsu')
-    arrow(ax, (28, 24), (46, 24)); text(ax, 37, 25, 'H$_2$', size=FS_S, ha='center', color=MUTED)
+    text(ax, 19, 37, 'Pressure / consumption', size=FS_S, ha='center', color=MUTED)
+    signals(ax, 6.5, 40, 25, 'HyBottleP, TotH2Kg\nhydncsu')
+    arrow(ax, (29, 24), (46, 24), color=EDGE['power']); text(ax, 37, 25, 'H$_2$', size=FS_S, ha='center', color=MUTED)
     stack(ax, 47, 19.75); text(ax, 53.5, 30.5, 'Fuel-cell system\n143 kW, 478 cells', size=FS_S, ha='center')
-    signals(ax, 64, 20.9, 27, 'FcVol · FcCur\ncell V · coolant T')
-    arrow(ax, (53.5, 37), (53.5, 46.8))
+    signals(ax, 64, 20.9, 27, 'FcVol, FcCur\ncell voltage, coolant T')
+    arrow(ax, (53.5, 37), (53.5, 46.8), color=EDGE['power'])
     battery(ax, 12, 47); text(ax, 18, 55.5, 'Battery 117 kWh', size=FS_S, ha='center')
-    ax.add_patch(Rectangle((47, 47), 13, 7, fc='white', ec=MUTED, lw=.6)); text(ax, 53.5, 50.5, 'DC/DC', size=FS_S, ha='center', va='center')
+    ax.add_patch(Rectangle((44, 47), 19, 7, fc='white', ec=MUTED, lw=.6)); text(ax, 53.5, 50.5, 'Power\nelectronics', size=FS_S, ha='center', va='center')
     text(ax, 53.5, 55.5, 'to 220 kW motor', size=FS_S, ha='center', color=MUTED)
-    arrow(ax, (26.5, 50.5), (46.6, 50.5), both=True)
-    signals(ax, 64, 47.4, 27, 'SOC · VCUTarPower\nTotKM')
+    arrow(ax, (26.5, 50.5), (43.6, 50.5), both=True, color=EDGE['power'])
+    signals(ax, 64, 47.4, 27, 'SOC, VCUTarPower\nTotKM')
     # acquisition chain
     text(ax, 100, 12.5, 'Data acquisition', size=FS, weight='bold', color='#9A7A10')
     arrow(ax, (93.4, 24), (101, 24)); text(ax, 97.2, 23, 'CAN', size=FS_S, ha='center', va='bottom', color=MUTED)
@@ -101,57 +102,49 @@ def main():
     text(ax, 165.5, 32.7, 'raw payloads', size=FS_S, ha='center', color=MUTED)
     ax.add_patch(FancyBboxPatch((101, 42), 78, 16, boxstyle='round,pad=0,rounding_size=1.2', fc='white', ec=EDGE['panel'], lw=.6))
     text(ax, 103, 43.8, 'Two clocks', size=FS_S, weight='bold')
-    text(ax, 103, 47.6, 'operation records: server receipt time\nGPS fixes: device time\n'
-                       f'verified device time added to {fmt(n["records_with_device_time"])} records', size=FS_S, color=MUTED)
+    text(ax, 103, 47.6, 'Operation records: server receipt time\nGPS fixes: device time', size=FS_S, color=MUTED)
 
     # ---------------------------------------------------------------- b: processing stages
     yb = 67
     text(ax, 4, yb, 'b', size=style.LETTER, weight='bold'); text(ax, 9, yb + .4, 'Processing stages', size=FS_T, weight='bold')
-    w, gap, x0, ys, hs = 25.4, 3.5, 39, yb + 11, 27
+    w, gap, x0, ys, hs = 25.4, 3.5, 39, yb + 11, 34
     stages = [
-        ('s3', 'Timestamps', f'clock checks\nlog supplement\n+{fmt(n["log_additions_operation"])} op.\n+{fmt(n["log_additions_gps"])} GPS', 'proc'),
-        ('s4', 'Quality', f'segments, gaps\nfield, GPS flags\ndecoding fix\n{fmt(n["segments_stage4_all_tbox"])} segm.', 'proc'),
-        ('s5', 'Derived', 'GPS status, track\nodometer, H$_2$\ntrips · FC runs\nrefuelling events', 'proc'),
-        ('s6', 'Assembly', f'{n["tbox_installations"]} installations\n→ {n["vehicles"]} identifiers\n−{fmt(a("operation", "4_excluded_outside_installation"))} op.\n−{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
-        ('s7', 'Release', f'{n["fields_released"]} fields\nanonymous IDs\ndictionary\nchecksums', 'rel'),
+        ('s3', 'Time\nreconciliation', f'clock checks\nlog supplement\nAdded:\n{fmt(n["log_additions_operation"])} op.\n{fmt(n["log_additions_gps"])} GPS', 'proc'),
+        ('s4', 'Quality\nannotation', f'segments, gaps\nfield, GPS flags\ndecoding correction', 'proc'),
+        ('s5', 'Derived\nquantities', 'GPS status, track\nodometer, H$_2$\ntrips · FC runs\nrefuelling events', 'proc'),
+        ('s6', 'Vehicle\nassembly', f'{n["tbox_installations"]} installations\n{n["vehicles"]} series\nExcluded:\n{fmt(a("operation", "4_excluded_outside_installation"))} op.\n{fmt(a("gps", "4_excluded_outside_installation"))} GPS', 'veh'),
+        ('s7', 'Release\npreparation', f'{n["fields_released"]} fields\nanonymous IDs\ndictionary\nchecksums', 'rel'),
     ]
     for k, (t, title, body, kind) in enumerate(stages):
         x = x0 + k * (w + gap)
         box(ax, x, ys, w, hs, kind); tag(ax, x + 1.8, ys + 5, t, kind)
-        text(ax, x + 9.4, ys + 1.7, title, size=FS, weight='bold')
-        text(ax, x + 1.8, ys + 7.2, body, size=FS_S, color=MUTED)
+        text(ax, x + 1.8, ys + 7, title, size=FS, weight='bold')
+        text(ax, x + 1.8, ys + 16.5, body, size=FS_S, color=MUTED)
         if k:
             arrow(ax, (x - gap, ys + hs / 2), (x, ys + hs / 2))
     sources = [(yb + 7, 's1', 'Harmonisation', f'database exports\nschema · window · dedup.\n{fmt(a("operation", "2_harmonized"))} op.\n{fmt(a("gps", "2_harmonized"))} GPS', 'src'),
                (yb + 28, 's2', 'Log decoding', 'receive logs + protocol\nmessages · frames\nboth clocks kept', 'rel')]
     for y, t, title, body, kind in sources:
-        box(ax, 4, y, 30, 19.5, kind); tag(ax, 5.8, y + 5, t, kind)
+        box(ax, 4, y, 30, 19.5 if t == 's1' else 17, kind); tag(ax, 5.8, y + 5, t, kind)
         text(ax, 13.4, y + 1.7, title, size=FS, weight='bold'); text(ax, 5.8, y + 7.2, body, size=FS_S, color=MUTED)
-    ax.plot([34, 36.3, 36.3, 34], [yb + 16.75, yb + 16.75, yb + 37.75, yb + 37.75], color=LINE, lw=.9)
+    ax.plot([34, 36.3, 36.3, 34], [yb + 16.75, yb + 16.75, yb + 36.5, yb + 36.5], color=LINE, lw=.9)
     arrow(ax, (36.3, ys + hs / 2), (x0, ys + hs / 2))
     s6x = x0 + 3 * (w + gap) + w / 2
     ax.add_patch(FancyBboxPatch((s6x - 26, yb + 3.2), 52, 5, boxstyle='round,pad=0,rounding_size=1', fc=FILL['veh'], ec=EDGE['veh'], lw=.5))
     text(ax, s6x, yb + 5.7, 'registry · inventories · replacement records', size=FS_S, color=EDGE['veh'], ha='center', va='center')
     arrow(ax, (s6x, yb + 8.2), (s6x, ys), color=EDGE['veh'], ls=(0, (2, 1.5)))
-    text(ax, x0, ys + hs + 2, 'Every record is accounted for from input to release (Table 3);\ndocumented corrections; no signal interpolation.', size=FS_S, color=MUTED)
 
     # ---------------------------------------------------------------- c: release
-    yc = 117
+    yc = 119
     text(ax, 4, yc, 'c', size=style.LETTER, weight='bold'); text(ax, 9, yc + .4, 'Release package', size=FS_T, weight='bold')
-    s7x = x0 + 4 * (w + gap) + w / 2
-    # One release stage produces all three package components.
-    branch_y = yc + 4
-    ax.plot([s7x, s7x, 32.5], [ys + hs, branch_y, branch_y], color=LINE, lw=.9)
-    for center in (32.5, 91.5, 150.5):
-        arrow(ax, (center, branch_y), (center, yc + 6.5))
     cols = [(4, 'Records with quality flags', f'{fmt(n["operation_records"])} operation records\n{fmt(n["gps_fixes"])} GPS fixes\nper series, Apache Parquet', 'src'),
-            (63, 'Events and summaries', f'segments · gaps · {fmt(n["trips"])} trips\nfuel-cell runs · refuelling events\ndaily and monthly tables', 'rel'),
-            (122, 'Metadata and documentation', 'vehicles · dictionary (units, caveats)\nquality-bit map · SHA-256 manifest\nCSV sample · README', 'veh')]
+            (63, 'Events and summaries', 'segments · gaps · trips\nfuel-cell runs · refuelling events\ndaily and monthly tables', 'rel'),
+            (122, 'Metadata and documentation', 'Series metadata · data dictionary\nquality-bit map · SHA-256 manifest\nCSV sample · README', 'veh')]
     for x, title, body, kind in cols:
         box(ax, x, yc + 6.5, 57, 18, kind); text(ax, x + 3, yc + 8.3, title, size=FS, weight='bold'); text(ax, x + 3, yc + 13.2, body, size=FS_S, color=MUTED)
-    text(ax, 4, yc + 27.5, f'{n["vehicles"]} identifiers · {n["period"][0][:7]} to {n["period"][1][:7]} · '
-                           f'GPS coordinates rounded to 0.01°; no altitude in the payload.', size=FS_S, color=MUTED)
+    text(ax, 4, yc + 27.5, f'100 confirmed vehicles + 1 unresolved series · {n["period"][0][:7]} to {n["period"][1][:7]} · GPS rounded to 0.01°', size=FS_S, color=MUTED)
 
+    (i.out / 'fig1_pipeline.caption.txt').write_text('Data acquisition, processing and release. a, Simplified fuel-cell powertrain and acquisition chain; green arrows show energy flow and blue-grey arrows show data flow. Dashed boxes list example signals. b, Seven processing stages, with selected input, addition and exclusion counts; complete record accounting is given in Table 3. c, The three components of the release package.\n')
     style.save(fig, i.out, 'fig1_pipeline')
     write_json(i.out / 'fig1_pipeline_numbers.json', dict(release=i.n, accounting=grouped(i.table('accounting'), ['stream', 'step']).to_dict('records'),
                fc_runs=fc_runs, sources=i.sources, note='Schematic; every count in the figure is taken from these inputs.'))
